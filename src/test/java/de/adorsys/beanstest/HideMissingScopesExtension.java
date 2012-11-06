@@ -16,53 +16,55 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-
-public class ContextRegisterExtension implements Extension {
-    
+/**
+ * Hides CDI scopes that are not implemented in Weld SE, e.g. RequestScope, SessionScope.
+ * Does not emulate the real behaviour of these scopes, but prevents the missing scope exception.
+ */
+public class HideMissingScopesExtension implements Extension {
     private Set<Class<? extends Annotation>> missingScopes = new HashSet<Class<? extends Annotation>>();
 
-    public void processAnnotatedType(@Observes ProcessAnnotatedType<?> pat, BeanManager beanManager)  {
+    public void processAnnotatedType(@Observes ProcessAnnotatedType<?> pat, BeanManager manager)  {
         for (Annotation a: pat.getAnnotatedType().getAnnotations()) {
-            if (!beanManager.isNormalScope(a.annotationType())) {
+            if (!manager.isNormalScope(a.annotationType())) {
                 continue;
             }
             try {
-                beanManager.getContext(a.annotationType());
+                manager.getContext(a.annotationType());
             } catch (ContextNotActiveException x) {
                 missingScopes.add(a.annotationType());
             }
         }
     }
     
-    protected void afterBeanDiscovery(@Observes AfterBeanDiscovery afterBeanDiscovery, BeanManager beanManager) {
+    protected void afterBeanDiscovery(@Observes AfterBeanDiscovery afterBeanDiscovery, BeanManager manager) {
         for (Class<? extends Annotation> a : missingScopes) {
             try {
-                beanManager.getContext(a);
+                manager.getContext(a);
             } catch (ContextNotActiveException x) {
-                afterBeanDiscovery.addContext(new ContextImpl(a)); // nur wenn es ihn noch nicht gibt
+                afterBeanDiscovery.addContext(new CDIContextMock(a)); 
             }
         }
     }
     
-    private static class ContextImpl implements Context {
-        private final Class<? extends Annotation> scopeAnno;
+    private static class CDIContextMock implements Context {
+        private final Class<? extends Annotation> scopeAnnotation;
         private Map<Contextual<?>, Object> instances;
         
-        ContextImpl(Class<? extends Annotation> scopeAnno) {
-            this.scopeAnno = scopeAnno;
+        CDIContextMock(Class<? extends Annotation> scopeAnnotation) {
+            this.scopeAnnotation = scopeAnnotation;
             instances = new HashMap<Contextual<?>, Object>();
         }
         
         @Override
         public Class<? extends Annotation> getScope() {
-            return scopeAnno;
+            return scopeAnnotation;
         }
 
         @Override
         public <T> T get(Contextual<T> contextual, CreationalContext<T> creationalContext) {
-            T tee = contextual.create(creationalContext);
-            instances.put(contextual, tee);
-            return tee;
+            T instance = contextual.create(creationalContext);
+            instances.put(contextual, instance);
+            return instance;
         }
 
         @SuppressWarnings("unchecked")
@@ -75,6 +77,5 @@ public class ContextRegisterExtension implements Extension {
         public boolean isActive() {
             return true;
         }
-        
     }
  }

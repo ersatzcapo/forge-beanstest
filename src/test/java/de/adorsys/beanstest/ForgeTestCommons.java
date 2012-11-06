@@ -36,7 +36,7 @@ public class ForgeTestCommons {
 	
 	private Project localproject;
 	
-	public void init(String completeInput, String projectName) throws Exception {
+	public void init(String completeInput, String projectName, String packageName) throws Exception {
 		shell.setOutputStream(System.out);
 		shell.setInputStream(new ByteArrayInputStream(completeInput.getBytes()));
 		shell.setAnsiSupported(false);
@@ -44,7 +44,7 @@ public class ForgeTestCommons {
 		beanManager.fireEvent(new Startup(), new Annotation[0]);
 		beanManager.fireEvent(new PostStartup(), new Annotation[0]);
 		
-		localproject = initializeProject(PackagingType.BASIC, projectName);
+		localproject = initializeProject(PackagingType.BASIC, projectName, packageName);
 		
 		shell.setVerbose(true);
 		shell.setExceptionHandlingEnabled(false);
@@ -55,17 +55,16 @@ public class ForgeTestCommons {
 	}
 
 	/**
-	 * TODO control directory, enable other packages etc.
 	 * @param type
 	 * @param projectDir
 	 * @return
 	 * @throws Exception
 	 */
-	protected Project initializeProject(PackagingType type, String projectName) throws Exception {
+	protected Project initializeProject(PackagingType type, String projectName, String packageName) throws Exception {
 		DirectoryResource directoryResource = (DirectoryResource) this.factory
 				.getResourceFrom(new File("target")).reify(DirectoryResource.class);
 		shell.setCurrentResource(directoryResource);
-		shell.execute("new-project --named " + projectName + " --topLevelPackage de.adorsys.test --type "
+		shell.execute("new-project --named " + projectName + " --topLevelPackage " + packageName + " --type "
 				+ type.toString());
 		return project.get();
 	}

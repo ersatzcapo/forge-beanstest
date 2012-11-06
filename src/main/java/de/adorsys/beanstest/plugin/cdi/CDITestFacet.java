@@ -1,36 +1,40 @@
 package de.adorsys.beanstest.plugin.cdi;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import org.jboss.forge.parser.JavaParser;
+import org.jboss.forge.parser.java.JavaClass;
 import org.jboss.forge.project.Project;
 import org.jboss.forge.project.dependencies.Dependency;
 import org.jboss.forge.project.dependencies.DependencyBuilder;
 import org.jboss.forge.project.facets.BaseFacet;
 import org.jboss.forge.project.facets.DependencyFacet;
+import org.jboss.forge.project.facets.JavaSourceFacet;
 import org.jboss.forge.project.facets.ResourceFacet;
-import org.jboss.forge.resources.DirectoryResource;
 import org.jboss.forge.resources.FileResource;
 import org.jboss.forge.shell.Shell;
+import org.jboss.forge.shell.ShellPrompt;
 import org.jboss.forge.shell.plugins.Alias;
 import org.jboss.forge.shell.plugins.RequiresFacet;
-import org.jboss.shrinkwrap.descriptor.api.DescriptorImporter;
-import org.jboss.shrinkwrap.descriptor.api.Descriptors;
-import org.jboss.shrinkwrap.descriptor.api.spec.cdi.beans.BeansDescriptor;
 
 /**
  * Facet managing the Weld SE dependency
  * 
  * @author Brandenstein
  */
-@Alias("weldSEDependencyFacet")
-@RequiresFacet({ DependencyFacet.class, ResourceFacet.class })
+@Alias("cdiTestFacet")
+@RequiresFacet({ DependencyFacet.class, ResourceFacet.class, JavaSourceFacet.class })
 public class CDITestFacet extends BaseFacet {
 
 	@Inject
 	private Shell shell;
+
+	@Inject
+	private ShellPrompt prompt;
 
 	@Override
 	public boolean install() {
@@ -45,13 +49,32 @@ public class CDITestFacet extends BaseFacet {
 
 		// add beans.xml in src/test/resouces
 		FileResource<?> descriptor = getConfigFile(project);
-        if (!descriptor.createNewFile())
-        {
-           throw new RuntimeException("Failed to create required [" + descriptor.getFullyQualifiedName() + "]");
-        }
-        descriptor.setContents(getClass().getResourceAsStream("/de/adorsys/cditest/beans.xml"));
+		if (!descriptor.createNewFile()) {
+			throw new RuntimeException("Failed to create required ["
+					+ descriptor.getFullyQualifiedName() + "]");
+		}
+		descriptor.setContents(getClass().getResourceAsStream(
+				"/de/adorsys/cditest/beans.xml"));
 
 		// create Runner
+		final JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
+
+		JavaClass javaResource = JavaParser.parse(JavaClass.class, getClass()
+				.getResourceAsStream("/de/adorsys/cditest/SimpleRunner.jv"));
+		javaResource.setPackage(java.getBasePackage());
+
+		try {
+			if (!java.getJavaResource(javaResource).exists()
+					|| prompt.promptBoolean("Runner ["
+							+ javaResource.getQualifiedName()
+							+ "] already, exists. Overwrite?")) {
+				java.saveTestJavaSource(javaResource);
+			} else {
+				return false; //TODO is this ok?
+			}
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException("Runner could not be created", e);
+		}
 
 		return true;
 	}
@@ -63,7 +86,7 @@ public class CDITestFacet extends BaseFacet {
 	}
 
 	@Override
-	public boolean isInstalled() { //TODO
+	public boolean isInstalled() { // TODO
 		DependencyFacet DependencyFacet = getProject().getFacet(
 				DependencyFacet.class);
 		return DependencyFacet.hasEffectiveDependency(DependencyBuilder
