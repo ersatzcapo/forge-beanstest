@@ -15,8 +15,9 @@
  */
 package de.adorsys.beanstest;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 
 import javax.enterprise.inject.Instance;
@@ -51,9 +52,13 @@ public class ForgeTestCommons {
 	
 	private Project localproject;
 	
-	public void init(String completeInput, String projectName, String packageName) throws Exception {
+	private MyInputStream myInputStream;
+	
+	public void init(String projectName, String packageName) throws Exception {
+	    myInputStream = new MyInputStream();
+	    
 		shell.setOutputStream(System.out);
-		shell.setInputStream(new ByteArrayInputStream(completeInput.getBytes()));
+		shell.setInputStream(myInputStream);
 		shell.setAnsiSupported(false);
 		
 		beanManager.fireEvent(new Startup(), new Annotation[0]);
@@ -67,6 +72,16 @@ public class ForgeTestCommons {
 	
 	public void cleanUp() throws Exception {
 		localproject.getProjectRoot().delete(true);
+	}
+	
+	/**
+	 * input as string. e.g. newline 10 newline will be "\n10\n"
+	 * 
+	 * @param input
+	 * @throws IOException
+	 */
+	public void setNewInput(String input) {
+	    myInputStream.setInput(input);
 	}
 
 	/**
@@ -82,6 +97,29 @@ public class ForgeTestCommons {
 		shell.execute("new-project --named " + projectName + " --topLevelPackage " + packageName + " --type "
 				+ type.toString());
 		return project.get();
+	}
+	
+	class MyInputStream extends InputStream {
+	    byte [] ba = null;
+	    int c = 0;
+	    
+	    void setInput(String input) {
+	        ba = input.getBytes();
+	        c = 0;
+	    }
+
+        @Override
+        public int read() throws IOException {
+            if(ba == null) {
+                throw new IllegalStateException("input not initialized");
+            }
+            
+            try {
+                return ba[c++];
+            } catch (ArrayIndexOutOfBoundsException e) {
+                throw new IllegalStateException("not enough input set");
+            }
+        }	    
 	}
 
 }

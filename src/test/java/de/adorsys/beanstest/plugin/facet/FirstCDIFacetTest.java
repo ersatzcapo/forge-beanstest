@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.adorsys.beanstest.plugin.cdi;
+package de.adorsys.beanstest.plugin.facet;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;

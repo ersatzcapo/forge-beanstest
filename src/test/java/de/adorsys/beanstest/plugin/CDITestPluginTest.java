@@ -21,7 +21,7 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import de.adorsys.beanstest.plugin.CDITestPlugin;
+import de.adorsys.beanstest.plugin.BeanstestPlugin;
 
 @Ignore //does not work anymore :(
 public class CDITestPluginTest extends AbstractShellTest
@@ -29,7 +29,7 @@ public class CDITestPluginTest extends AbstractShellTest
    @Deployment
    public static JavaArchive getDeployment()
    {
-      return AbstractShellTest.getDeployment().addPackages(true, CDITestPlugin.class.getPackage());
+      return AbstractShellTest.getDeployment().addPackages(true, BeanstestPlugin.class.getPackage());
    }
 
    @Test
