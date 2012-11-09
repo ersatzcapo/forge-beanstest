@@ -15,11 +15,16 @@
  */
 package de.adorsys.beanstest.plugin;
 
+import java.util.List;
+
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.jboss.forge.project.Project;
+import org.jboss.forge.project.dependencies.Dependency;
+import org.jboss.forge.project.facets.DependencyFacet;
 import org.jboss.forge.project.facets.events.InstallFacets;
+import org.jboss.forge.shell.Shell;
 import org.jboss.forge.shell.ShellMessages;
 import org.jboss.forge.shell.ShellPrompt;
 import org.jboss.forge.shell.plugins.Alias;
@@ -43,16 +48,29 @@ import de.adorsys.beanstest.plugin.facet.CDITestFacet;
 public class BeanstestPlugin implements Plugin {
     @Inject
     private ShellPrompt prompt;
+    
+    @Inject
+    private Shell shell;
 
     @Inject
     private Project project;
 
     @Inject
     private Event<InstallFacets> installFaEvent;
+    
+    @Inject
+    private BeanstestConfiguration configuration;
 
     @SetupCommand
     public void setup(PipeOut out) {
         if (!project.hasFacet(CDITestFacet.class)) {
+            // ask for weld se version
+            DependencyFacet dependencyFacet = project.getFacet(DependencyFacet.class);
+            List<Dependency> versions = dependencyFacet.resolveAvailableVersions("org.jboss.weld.se:weld-se:[1.1.2.Final,):test"); //TODO => plugin
+            Dependency dependency = shell.promptChoiceTyped("Select version: ", versions, CDITestFacet.WELDSEDEFAULT);
+            
+            configuration.setWeldseDependency(dependency);
+            
             installFaEvent.fire(new InstallFacets(CDITestFacet.class));
         } else {
             ShellMessages.info(out, "is installed");
@@ -60,11 +78,15 @@ public class BeanstestPlugin implements Plugin {
     }
 
     @Command("hide-missing-scopes")
-    public void hideMissingScopes() {
-        System.out.println("TODO");
+    public void hideMissingScopes(final PipeOut out) {
+        CDITestFacet cditest = project.getFacet(CDITestFacet.class);
+        
+        //TODO handle io
+        
+        cditest.hideMissingScopes();
     }
 
-    @Command("create-mock-alternative")
+    @Command("mock-alternative")
     // mockito plain stereotype
     // TODO
     public void command(@PipeIn String in, PipeOut out, @Option String... args) {

@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import org.jboss.forge.shell.Shell;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -63,7 +64,7 @@ public class CDITestFacetTest {
         assertTrue("test beans.xml missing", new File("target/" + TESTPROJECTNAME + "/src/test/resources/META-INF/beans.xml").exists());
 
         // test SimpleRunner
-        String simpleRunnerPath = TESTPACKAGENAME.replaceAll("\\.", "/") + "/SimpleRunner.java";
+        String simpleRunnerPath = TESTPACKAGENAME.replaceAll("\\.", "/") + "/beanstest/SimpleRunner.java";
         assertTrue(simpleRunnerPath + " missing", new File("target/" + TESTPROJECTNAME + "/src/test/java/" + simpleRunnerPath).exists());
     }
 
@@ -74,5 +75,33 @@ public class CDITestFacetTest {
         shell.execute("beanstest setup");
         
         shell.execute("beanstest hide-missing-scopes");
+ 
+        // test services/javax.enterprise.inject.spi.Extension created
+        assertTrue("CDI extensions services file missing", new File("target/" 
+                + TESTPROJECTNAME 
+                + "/src/test/resources/META-INF/services/javax.enterprise.inject.spi.Extension").exists());
+
+        // test SimpleRunner
+        String simpleRunnerPath = TESTPACKAGENAME.replaceAll("\\.", "/") + "/beanstest/HideMissingScopesExtension.java";
+        assertTrue(simpleRunnerPath + " missing", new File("target/" + TESTPROJECTNAME + "/src/test/java/" + simpleRunnerPath).exists());
     }
+    
+    @Ignore("TODO")
+    @Test
+    public void testHideMissingScopesExistingServices() throws Exception {
+        forgeTestCommons.setNewInput("\n10\n");
+
+        shell.execute("beanstest setup");
+        
+        new File("target/" 
+                + TESTPROJECTNAME 
+                + "/src/test/resources/META-INF/services").mkdirs();
+        
+        new File("target/" 
+                + TESTPROJECTNAME 
+                + "/src/test/resources/META-INF/services/javax.enterprise.inject.spi.Extension").createNewFile();
+
+        shell.execute("beanstest hide-missing-scopes");
+    }
+
 }

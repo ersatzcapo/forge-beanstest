@@ -100,7 +100,7 @@ public class ForgeTestCommons {
 	}
 	
 	class MyInputStream extends InputStream {
-	    byte [] ba = null;
+	    byte [] ba = null;//"\n".getBytes();
 	    int c = 0;
 	    
 	    void setInput(String input) {

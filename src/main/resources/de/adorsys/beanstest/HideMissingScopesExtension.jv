@@ -1,0 +1,81 @@
+package de.adorsys.beanstest;
+
+import javax.enterprise.context.ContextNotActiveException;
+import javax.enterprise.context.spi.Context;
+import javax.enterprise.context.spi.Contextual;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.AfterBeanDiscovery;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.Extension;
+import javax.enterprise.inject.spi.ProcessAnnotatedType;
+
+import java.lang.annotation.Annotation;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * Hides CDI scopes that are not implemented in Weld SE, e.g. RequestScope, SessionScope.
+ * Does not emulate the real behaviour of these scopes, but prevents the missing scope exception.
+ */
+public class HideMissingScopesExtension implements Extension {
+    private Set<Class<? extends Annotation>> missingScopes = new HashSet<Class<? extends Annotation>>();
+
+    public void processAnnotatedType(@Observes ProcessAnnotatedType<?> pat, BeanManager manager)  {
+        for (Annotation a: pat.getAnnotatedType().getAnnotations()) {
+            if (!manager.isNormalScope(a.annotationType())) {
+                continue;
+            }
+            try {
+                manager.getContext(a.annotationType());
+            } catch (ContextNotActiveException x) {
+                missingScopes.add(a.annotationType());
+            }
+        }
+    }
+    
+    protected void afterBeanDiscovery(@Observes AfterBeanDiscovery afterBeanDiscovery, BeanManager manager) {
+        for (Class<? extends Annotation> a : missingScopes) {
+            try {
+                manager.getContext(a);
+            } catch (ContextNotActiveException x) {
+                afterBeanDiscovery.addContext(new CDIContextMock(a)); 
+            }
+        }
+    }
+    
+    private static class CDIContextMock implements Context {
+        private final Class<? extends Annotation> scopeAnnotation;
+        private Map<Contextual<?>, Object> instances;
+        
+        CDIContextMock(Class<? extends Annotation> scopeAnnotation) {
+            this.scopeAnnotation = scopeAnnotation;
+            instances = new HashMap<Contextual<?>, Object>();
+        }
+        
+        @Override
+        public Class<? extends Annotation> getScope() {
+            return scopeAnnotation;
+        }
+
+        @Override
+        public <T> T get(Contextual<T> contextual, CreationalContext<T> creationalContext) {
+            T instance = contextual.create(creationalContext);
+            instances.put(contextual, instance);
+            return instance;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> T get(Contextual<T> contextual) {
+            return (T) instances.get(contextual);
+        }
+
+        @Override
+        public boolean isActive() {
+            return true;
+        }
+    }
+ }

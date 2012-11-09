@@ -17,7 +17,6 @@ package de.adorsys.beanstest.plugin.facet;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -30,11 +29,14 @@ import org.jboss.forge.project.facets.BaseFacet;
 import org.jboss.forge.project.facets.DependencyFacet;
 import org.jboss.forge.project.facets.JavaSourceFacet;
 import org.jboss.forge.project.facets.ResourceFacet;
+import org.jboss.forge.resources.DirectoryResource;
 import org.jboss.forge.resources.FileResource;
 import org.jboss.forge.shell.Shell;
 import org.jboss.forge.shell.ShellPrompt;
 import org.jboss.forge.shell.plugins.Alias;
 import org.jboss.forge.shell.plugins.RequiresFacet;
+
+import de.adorsys.beanstest.plugin.BeanstestConfiguration;
 
 /**
  * Facet managing the Weld SE dependency
@@ -42,22 +44,25 @@ import org.jboss.forge.shell.plugins.RequiresFacet;
  * @author Brandenstein
  */
 @Alias("beanstest.CDITestFacet")
-@RequiresFacet({ DependencyFacet.class, ResourceFacet.class, JavaSourceFacet.class })
+@RequiresFacet({ DependencyFacet.class, ResourceFacet.class, JavaSourceFacet.class }) //TODO requires CDIFacet
 public class CDITestFacet extends BaseFacet {
-    private static final Dependency WELDSEDEFAULT = DependencyBuilder.create("org.jboss.weld.se:weld-se:1.1.10.Final:test");
-
+    public static final Dependency WELDSEDEFAULT = DependencyBuilder.create("org.jboss.weld.se:weld-se:1.1.10.Final:test");
+    private static final String PACKAGE = ".beanstest";
+    
     @Inject
     private Shell shell;
 
     @Inject
     private ShellPrompt prompt;
+    
+    @Inject
+    private BeanstestConfiguration configuration;
 
     @Override
     public boolean install() {
         // add weld-se dependency
         DependencyFacet dependencyFacet = project.getFacet(DependencyFacet.class);
-        List<Dependency> versions = dependencyFacet.resolveAvailableVersions("org.jboss.weld.se:weld-se:[1.1.2.Final,):test");
-        Dependency dependency = shell.promptChoiceTyped("Select version: ", versions, WELDSEDEFAULT);
+        Dependency dependency = configuration.getWeldseDependency();
         dependencyFacet.addDirectDependency(dependency);
 
         // add beans.xml in src/test/resouces
@@ -71,11 +76,11 @@ public class CDITestFacet extends BaseFacet {
         final JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
 
         JavaClass javaResource = JavaParser.parse(JavaClass.class, getClass().getResourceAsStream("/de/adorsys/beanstest/SimpleRunner.jv"));
-        javaResource.setPackage(java.getBasePackage());
+        javaResource.setPackage(java.getBasePackage() + PACKAGE);
 
         try {
             if (!java.getJavaResource(javaResource).exists() || prompt.promptBoolean("Runner [" + javaResource.getQualifiedName() + "] already, exists. Overwrite?")) {
-                java.saveTestJavaSource(javaResource);
+                java.saveTestJavaSource(javaResource); //TODO => plugin?
             } else {
                 return false; // TODO is this ok?
             }
@@ -94,5 +99,37 @@ public class CDITestFacet extends BaseFacet {
     public boolean isInstalled() { // TODO
         DependencyFacet DependencyFacet = getProject().getFacet(DependencyFacet.class);
         return DependencyFacet.hasEffectiveDependency(DependencyBuilder.create("org.jboss.weld.se:weld-se"));
+    }
+    
+    public void hideMissingScopes() {        
+        // Create HideMissingScopes extension
+        final JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
+
+        JavaClass javaResource = JavaParser.parse(JavaClass.class, getClass().getResourceAsStream("/de/adorsys/beanstest/HideMissingScopesExtension.jv"));
+        javaResource.setPackage(java.getBasePackage() + PACKAGE);
+
+        try {
+            if (!java.getJavaResource(javaResource).exists() || prompt.promptBoolean("HideMissingScopesExtension [" + javaResource.getQualifiedName() + "] already, exists. Overwrite?")) {
+                java.saveTestJavaSource(javaResource); //TODO => plugin?
+            } 
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("HideMissingScopesExtension cannot be created", e);
+        }
+        
+        // Create services folder and CDI extensions file
+        DirectoryResource services = project.getFacet(ResourceFacet.class).getTestResourceFolder().getChildDirectory("META-INF" + File.separator +"services");
+        if (!services.exists()) {
+            services.mkdirs();
+        }
+        
+        FileResource<?> cdiextensions = (FileResource<?>) services.getChild("javax.enterprise.inject.spi.Extension");
+        
+        if (cdiextensions.exists()) {
+            //TODO read existing, check for HMSExtension, if not present add otherwise return with error
+            throw new RuntimeException("not implemented");
+        } else {
+            cdiextensions.createNewFile();
+            cdiextensions.setContents(javaResource.getQualifiedName());
+        }
     }
 }
