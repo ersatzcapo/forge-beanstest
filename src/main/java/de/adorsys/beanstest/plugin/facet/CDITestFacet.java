@@ -31,8 +31,6 @@ import org.jboss.forge.project.facets.JavaSourceFacet;
 import org.jboss.forge.project.facets.ResourceFacet;
 import org.jboss.forge.resources.DirectoryResource;
 import org.jboss.forge.resources.FileResource;
-import org.jboss.forge.shell.Shell;
-import org.jboss.forge.shell.ShellPrompt;
 import org.jboss.forge.shell.plugins.Alias;
 import org.jboss.forge.shell.plugins.RequiresFacet;
 
@@ -47,13 +45,7 @@ import de.adorsys.beanstest.plugin.BeanstestConfiguration;
 @RequiresFacet({ DependencyFacet.class, ResourceFacet.class, JavaSourceFacet.class }) //TODO requires CDIFacet
 public class CDITestFacet extends BaseFacet {
     public static final Dependency WELDSEDEFAULT = DependencyBuilder.create("org.jboss.weld.se:weld-se:1.1.10.Final:test");
-    private static final String PACKAGE = ".beanstest";
-    
-    @Inject
-    private Shell shell;
-
-    @Inject
-    private ShellPrompt prompt;
+    public static final String PACKAGE = ".beanstest";
     
     @Inject
     private BeanstestConfiguration configuration;
@@ -71,23 +63,17 @@ public class CDITestFacet extends BaseFacet {
             throw new RuntimeException("Failed to create required [" + descriptor.getFullyQualifiedName() + "]");
         }
         descriptor.setContents(getClass().getResourceAsStream("/de/adorsys/beanstest/beans.xml"));
-
-        // create Runner
+        
+        // create SimpleRunner
         final JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
-
-        JavaClass javaResource = JavaParser.parse(JavaClass.class, getClass().getResourceAsStream("/de/adorsys/beanstest/SimpleRunner.jv"));
-        javaResource.setPackage(java.getBasePackage() + PACKAGE);
-
+        JavaClass simpleRunner = JavaParser.parse(JavaClass.class, getClass().getResourceAsStream("/de/adorsys/beanstest/SimpleRunner.jv"));
+        simpleRunner.setPackage(java.getBasePackage() + CDITestFacet.PACKAGE);
         try {
-            if (!java.getJavaResource(javaResource).exists() || prompt.promptBoolean("Runner [" + javaResource.getQualifiedName() + "] already, exists. Overwrite?")) {
-                java.saveTestJavaSource(javaResource); //TODO => plugin?
-            } else {
-                return false; // TODO is this ok?
-            }
+            java.saveTestJavaSource(simpleRunner);
         } catch (FileNotFoundException e) {
-            throw new RuntimeException("Runner cannot be created", e);
+            throw new RuntimeException("SimpleRunner could not be created", e);
         }
-
+        
         return true;
     }
 
@@ -109,9 +95,7 @@ public class CDITestFacet extends BaseFacet {
         javaResource.setPackage(java.getBasePackage() + PACKAGE);
 
         try {
-            if (!java.getJavaResource(javaResource).exists() || prompt.promptBoolean("HideMissingScopesExtension [" + javaResource.getQualifiedName() + "] already, exists. Overwrite?")) {
-                java.saveTestJavaSource(javaResource); //TODO => plugin?
-            } 
+            java.saveTestJavaSource(javaResource);
         } catch (FileNotFoundException e) {
             throw new RuntimeException("HideMissingScopesExtension cannot be created", e);
         }

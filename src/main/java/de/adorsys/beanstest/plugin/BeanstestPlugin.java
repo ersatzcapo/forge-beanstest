@@ -20,9 +20,12 @@ import java.util.List;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import org.jboss.forge.parser.JavaParser;
+import org.jboss.forge.parser.java.JavaClass;
 import org.jboss.forge.project.Project;
 import org.jboss.forge.project.dependencies.Dependency;
 import org.jboss.forge.project.facets.DependencyFacet;
+import org.jboss.forge.project.facets.JavaSourceFacet;
 import org.jboss.forge.project.facets.events.InstallFacets;
 import org.jboss.forge.shell.Shell;
 import org.jboss.forge.shell.ShellMessages;
@@ -44,11 +47,11 @@ import de.adorsys.beanstest.plugin.facet.CDITestFacet;
  * Enables a project to use Weld SE for junit testing
  */
 @Alias("beanstest")
-@RequiresFacet(CDITestFacet.class)
+@RequiresFacet({CDITestFacet.class, JavaSourceFacet.class})
 public class BeanstestPlugin implements Plugin {
     @Inject
     private ShellPrompt prompt;
-    
+
     @Inject
     private Shell shell;
 
@@ -57,20 +60,19 @@ public class BeanstestPlugin implements Plugin {
 
     @Inject
     private Event<InstallFacets> installFaEvent;
-    
+
     @Inject
     private BeanstestConfiguration configuration;
 
     @SetupCommand
-    public void setup(PipeOut out) {
+    public void setup(PipeOut out) throws Exception {
         if (!project.hasFacet(CDITestFacet.class)) {
             // ask for weld se version
             DependencyFacet dependencyFacet = project.getFacet(DependencyFacet.class);
-            List<Dependency> versions = dependencyFacet.resolveAvailableVersions("org.jboss.weld.se:weld-se:[1.1.2.Final,):test"); //TODO => plugin
+            List<Dependency> versions = dependencyFacet.resolveAvailableVersions("org.jboss.weld.se:weld-se:[1.1.2.Final,):test");
             Dependency dependency = shell.promptChoiceTyped("Select version: ", versions, CDITestFacet.WELDSEDEFAULT);
-            
             configuration.setWeldseDependency(dependency);
-            
+
             installFaEvent.fire(new InstallFacets(CDITestFacet.class));
         } else {
             ShellMessages.info(out, "is installed");
@@ -80,9 +82,6 @@ public class BeanstestPlugin implements Plugin {
     @Command("hide-missing-scopes")
     public void hideMissingScopes(final PipeOut out) {
         CDITestFacet cditest = project.getFacet(CDITestFacet.class);
-        
-        //TODO handle io
-        
         cditest.hideMissingScopes();
     }
 

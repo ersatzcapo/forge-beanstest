@@ -30,5 +30,4 @@ public class BeanstestConfiguration {
     public void setWeldseDependency(Dependency weldseDependency) {
         this.weldseDependency = weldseDependency;
     }
-
 }
