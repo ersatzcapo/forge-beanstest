@@ -15,16 +15,20 @@
  */
 package de.adorsys.beanstest.plugin.facet;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 
 import javax.inject.Inject;
 
 import org.jboss.forge.shell.Shell;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -44,7 +48,7 @@ public class CDITestFacetTest {
 
     @Before
     public void init() throws Exception {
-        forgeTestCommons.init(TESTPROJECTNAME, TESTPACKAGENAME);
+        forgeTestCommons.init(TESTPROJECTNAME, TESTPACKAGENAME, false);
     }
 
     @After
@@ -86,7 +90,6 @@ public class CDITestFacetTest {
         assertTrue(simpleRunnerPath + " missing", new File("target/" + TESTPROJECTNAME + "/src/test/java/" + simpleRunnerPath).exists());
     }
     
-    @Ignore("TODO")
     @Test
     public void testHideMissingScopesExistingServices() throws Exception {
         forgeTestCommons.setNewInput("\n10\n");
@@ -97,11 +100,23 @@ public class CDITestFacetTest {
                 + TESTPROJECTNAME 
                 + "/src/test/resources/META-INF/services").mkdirs();
         
-        new File("target/" 
+        File f = new File("target/" 
                 + TESTPROJECTNAME 
-                + "/src/test/resources/META-INF/services/javax.enterprise.inject.spi.Extension").createNewFile();
+                + "/src/test/resources/META-INF/services/javax.enterprise.inject.spi.Extension");
+        f.createNewFile();
+
+        FileOutputStream fis = new FileOutputStream(f);
+        fis.write("XXX\n".getBytes());
+        fis.close();
 
         shell.execute("beanstest hide-missing-scopes");
+        
+        InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(f));
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        
+        assertEquals("XXX", bufferedReader.readLine());
+        assertEquals(TESTPACKAGENAME + CDITestFacet.PACKAGE + "." + "HideMissingScopesExtension", bufferedReader.readLine());
+        bufferedReader.close();
     }
 
 }

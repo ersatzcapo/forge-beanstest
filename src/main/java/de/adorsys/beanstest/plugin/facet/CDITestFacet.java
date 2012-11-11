@@ -34,6 +34,7 @@ import org.jboss.forge.resources.FileResource;
 import org.jboss.forge.shell.plugins.Alias;
 import org.jboss.forge.shell.plugins.RequiresFacet;
 
+import de.adorsys.beanstest.ExtensionsServicesFileResource;
 import de.adorsys.beanstest.plugin.BeanstestConfiguration;
 
 /**
@@ -91,11 +92,11 @@ public class CDITestFacet extends BaseFacet {
         // Create HideMissingScopes extension
         final JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
 
-        JavaClass javaResource = JavaParser.parse(JavaClass.class, getClass().getResourceAsStream("/de/adorsys/beanstest/HideMissingScopesExtension.jv"));
-        javaResource.setPackage(java.getBasePackage() + PACKAGE);
+        JavaClass hideMissingScopesJavaClass = JavaParser.parse(JavaClass.class, getClass().getResourceAsStream("/de/adorsys/beanstest/HideMissingScopesExtension.jv"));
+        hideMissingScopesJavaClass.setPackage(java.getBasePackage() + PACKAGE);
 
         try {
-            java.saveTestJavaSource(javaResource);
+            java.saveTestJavaSource(hideMissingScopesJavaClass);
         } catch (FileNotFoundException e) {
             throw new RuntimeException("HideMissingScopesExtension cannot be created", e);
         }
@@ -106,14 +107,16 @@ public class CDITestFacet extends BaseFacet {
             services.mkdirs();
         }
         
-        FileResource<?> cdiextensions = (FileResource<?>) services.getChild("javax.enterprise.inject.spi.Extension");
+        ExtensionsServicesFileResource cdiextensions = (ExtensionsServicesFileResource) services.getChild("javax.enterprise.inject.spi.Extension");
         
         if (cdiextensions.exists()) {
-            //TODO read existing, check for HMSExtension, if not present add otherwise return with error
-            throw new RuntimeException("not implemented");
+            // read existing, check for HMSExtension, if not present add
+            if (!cdiextensions.containsExtension(hideMissingScopesJavaClass)) {
+                cdiextensions.addExtension(hideMissingScopesJavaClass);
+            }
         } else {
             cdiextensions.createNewFile();
-            cdiextensions.setContents(javaResource.getQualifiedName());
+            cdiextensions.setContents(hideMissingScopesJavaClass.getQualifiedName());
         }
     }
 }

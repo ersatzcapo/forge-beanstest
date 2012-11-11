@@ -18,6 +18,7 @@ package de.adorsys.beanstest;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 
 import javax.enterprise.inject.Instance;
@@ -54,10 +55,10 @@ public class ForgeTestCommons {
 	
 	private MyInputStream myInputStream;
 	
-	public void init(String projectName, String packageName) throws Exception {
+	public void init(String projectName, String packageName, boolean print2stout) throws Exception {
 	    myInputStream = new MyInputStream();
 	    
-		shell.setOutputStream(System.out);
+		shell.setOutputStream(new MyOutputStream(print2stout));
 		shell.setInputStream(myInputStream);
 		shell.setAnsiSupported(false);
 		
@@ -100,7 +101,7 @@ public class ForgeTestCommons {
 	}
 	
 	class MyInputStream extends InputStream {
-	    byte [] ba = null;//"\n".getBytes();
+	    byte [] ba = "\n".getBytes();
 	    int c = 0;
 	    
 	    void setInput(String input) {
@@ -122,4 +123,19 @@ public class ForgeTestCommons {
         }	    
 	}
 
+	class MyOutputStream extends OutputStream {
+	    boolean print2stdout;
+
+        public MyOutputStream(boolean print2stout) {
+            this.print2stdout = print2stout;
+        }
+
+        @Override
+        public void write(int b) throws IOException {
+            if (print2stdout) {
+                System.out.write(b);
+            }
+        }
+	    
+	}
 }
