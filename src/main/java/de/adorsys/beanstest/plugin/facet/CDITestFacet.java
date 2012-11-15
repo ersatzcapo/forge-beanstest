@@ -46,6 +46,7 @@ import de.adorsys.beanstest.plugin.BeanstestConfiguration;
 @RequiresFacet({ DependencyFacet.class, ResourceFacet.class, JavaSourceFacet.class }) //TODO requires CDIFacet
 public class CDITestFacet extends BaseFacet {
     public static final Dependency WELDSEDEFAULT = DependencyBuilder.create("org.jboss.weld.se:weld-se:1.1.10.Final:test");
+    public static final Dependency JUNIT = DependencyBuilder.create("org.junit4:org.junit4:4.3.1:test");
     public static final String PACKAGE = ".beanstest";
     
     @Inject
@@ -57,6 +58,9 @@ public class CDITestFacet extends BaseFacet {
         DependencyFacet dependencyFacet = project.getFacet(DependencyFacet.class);
         Dependency dependency = configuration.getWeldseDependency();
         dependencyFacet.addDirectDependency(dependency);
+        
+        // add junit dependency
+        dependencyFacet.addDirectDependency(JUNIT);
 
         // add beans.xml in src/test/resouces
         FileResource<?> descriptor = getConfigFile(project);

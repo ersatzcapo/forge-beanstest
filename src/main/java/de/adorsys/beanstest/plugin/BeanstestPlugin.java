@@ -15,6 +15,8 @@
  */
 package de.adorsys.beanstest.plugin;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 import javax.enterprise.event.Event;
@@ -27,6 +29,10 @@ import org.jboss.forge.project.dependencies.Dependency;
 import org.jboss.forge.project.facets.DependencyFacet;
 import org.jboss.forge.project.facets.JavaSourceFacet;
 import org.jboss.forge.project.facets.events.InstallFacets;
+import org.jboss.forge.resources.DirectoryResource;
+import org.jboss.forge.resources.FileResource;
+import org.jboss.forge.resources.Resource;
+import org.jboss.forge.resources.java.JavaResource;
 import org.jboss.forge.shell.Shell;
 import org.jboss.forge.shell.ShellMessages;
 import org.jboss.forge.shell.ShellPrompt;
@@ -38,6 +44,7 @@ import org.jboss.forge.shell.plugins.PipeOut;
 import org.jboss.forge.shell.plugins.Plugin;
 import org.jboss.forge.shell.plugins.RequiresFacet;
 import org.jboss.forge.shell.plugins.SetupCommand;
+import org.junit.runner.RunWith;
 
 import de.adorsys.beanstest.plugin.facet.CDITestFacet;
 
@@ -47,7 +54,7 @@ import de.adorsys.beanstest.plugin.facet.CDITestFacet;
  * Enables a project to use Weld SE for junit testing
  */
 @Alias("beanstest")
-@RequiresFacet({CDITestFacet.class, JavaSourceFacet.class})
+@RequiresFacet({ CDITestFacet.class, JavaSourceFacet.class })
 public class BeanstestPlugin implements Plugin {
     @Inject
     private ShellPrompt prompt;
@@ -80,10 +87,48 @@ public class BeanstestPlugin implements Plugin {
     }
 
     @Command("hide-missing-scopes")
-    public void hideMissingScopes(final PipeOut out) {
+    public void hideMissingScopes() {
         CDITestFacet cditest = project.getFacet(CDITestFacet.class);
         cditest.hideMissingScopes();
     }
+
+    @Command("new-test")
+    public void newTest(@Option(required = true, name = "type", shortName = "t") final String type, //JavaResource always maps to main folder, see JavaPathspecParser
+            PipeOut out) throws FileNotFoundException {
+        JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
+        DirectoryResource resource = java.getTestSourceFolder();
+        
+        String path = type.replaceAll("\\.", File.separator) + ".java"; //TODO
+        
+        JavaResource javaTestResource = resource.getChildOfType(JavaResource.class, path); //TODO eventually . ˜
+        
+        if (!javaTestResource.exists()) {
+            if (javaTestResource.createNewFile()) {
+                JavaClass javaTestClass = JavaParser.create(JavaClass.class);
+                javaTestClass.setName(java.calculateName(javaTestResource));
+                javaTestClass.setPackage(java.calculatePackage(javaTestResource));
+                
+                //SimpleRunner import
+                JavaResource simpleRunnerResource = java.getTestJavaResource(java.getBasePackage() + CDITestFacet.PACKAGE + ".SimpleRunner.java");
+                if(simpleRunnerResource != null && simpleRunnerResource.exists()) {
+                    javaTestClass.addImport(simpleRunnerResource.getJavaSource());
+                } else {
+                    throw new RuntimeException("SimpleRunner does not exist: [" + simpleRunnerResource + "]");
+                }
+                
+                javaTestClass.addImport(RunWith.class); //TODO are there multiple junit versions with different runners
+                
+//                javaTestClass.addAnnotation("RunWith(SimpleRunner.class)"); TODO
+
+                javaTestResource.setContents(javaTestClass);
+            } else {
+                ShellMessages.error(out, "Cannot create test [" + javaTestResource.getFullyQualifiedName() + "]");
+            }
+        } else {
+            ShellMessages.error(out, "Test already exists [" + javaTestResource.getFullyQualifiedName() + "]");
+        }
+    }
+
 
     @Command("mock-alternative")
     // mockito plain stereotype
