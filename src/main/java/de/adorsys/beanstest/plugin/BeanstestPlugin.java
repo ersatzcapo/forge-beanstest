@@ -30,8 +30,6 @@ import org.jboss.forge.project.facets.DependencyFacet;
 import org.jboss.forge.project.facets.JavaSourceFacet;
 import org.jboss.forge.project.facets.events.InstallFacets;
 import org.jboss.forge.resources.DirectoryResource;
-import org.jboss.forge.resources.FileResource;
-import org.jboss.forge.resources.Resource;
 import org.jboss.forge.resources.java.JavaResource;
 import org.jboss.forge.shell.Shell;
 import org.jboss.forge.shell.ShellMessages;
@@ -116,9 +114,9 @@ public class BeanstestPlugin implements Plugin {
                     throw new RuntimeException("SimpleRunner does not exist: [" + simpleRunnerResource + "]");
                 }
                 
-                javaTestClass.addImport(RunWith.class); //TODO are there multiple junit versions with different runners
-                
-//                javaTestClass.addAnnotation("RunWith(SimpleRunner.class)"); TODO
+                javaTestClass.addImport(RunWith.class);
+                javaTestClass.addAnnotation(RunWith.class);
+                javaTestClass.getAnnotation(RunWith.class).setLiteralValue("SimpleRunner.class");
 
                 javaTestResource.setContents(javaTestClass);
             } else {

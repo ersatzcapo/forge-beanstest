@@ -33,20 +33,22 @@ import org.jboss.forge.resources.DirectoryResource;
 import org.jboss.forge.resources.FileResource;
 import org.jboss.forge.shell.plugins.Alias;
 import org.jboss.forge.shell.plugins.RequiresFacet;
+import org.jboss.forge.spec.javaee.CDIFacet;
 
 import de.adorsys.beanstest.ExtensionsServicesFileResource;
 import de.adorsys.beanstest.plugin.BeanstestConfiguration;
 
 /**
- * Facet managing the Weld SE dependency
+ * Facet managing the Weld SE and junit dependency, creates beans.xml in test resources and copies SimpleRunner
+ * HideMissingScopes installs the HideMissingScopes CDI extension 
  * 
  * @author Brandenstein
  */
 @Alias("beanstest.CDITestFacet")
-@RequiresFacet({ DependencyFacet.class, ResourceFacet.class, JavaSourceFacet.class }) //TODO requires CDIFacet
+@RequiresFacet({ DependencyFacet.class, ResourceFacet.class, JavaSourceFacet.class, CDIFacet.class })
 public class CDITestFacet extends BaseFacet {
     public static final Dependency WELDSEDEFAULT = DependencyBuilder.create("org.jboss.weld.se:weld-se:1.1.10.Final:test");
-    public static final Dependency JUNIT = DependencyBuilder.create("org.junit4:org.junit4:4.3.1:test");
+    public static final Dependency JUNIT = DependencyBuilder.create("junit:junit:4.10:test");
     public static final String PACKAGE = ".beanstest";
     
     @Inject
@@ -87,9 +89,17 @@ public class CDITestFacet extends BaseFacet {
     }
 
     @Override
-    public boolean isInstalled() { // TODO
-        DependencyFacet DependencyFacet = getProject().getFacet(DependencyFacet.class);
-        return DependencyFacet.hasEffectiveDependency(DependencyBuilder.create("org.jboss.weld.se:weld-se"));
+    public boolean isInstalled() {
+        DependencyFacet dependencyFacet = getProject().getFacet(DependencyFacet.class);
+        boolean weldse = dependencyFacet.hasEffectiveDependency(DependencyBuilder.create("org.jboss.weld.se:weld-se"));
+        boolean junit = dependencyFacet.hasEffectiveDependency(DependencyBuilder.create(JUNIT));
+        final JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
+        boolean simplerunner = false;
+        try {
+            simplerunner = java.getTestJavaResource((java.getBasePackage() + PACKAGE).replaceAll("\\.", File.separator) + "/SimpleRunner.java").exists();
+        } catch (FileNotFoundException e) {}
+        boolean testbeans = getConfigFile(getProject()).exists();
+        return weldse && junit && simplerunner && testbeans;
     }
     
     public void hideMissingScopes() {        

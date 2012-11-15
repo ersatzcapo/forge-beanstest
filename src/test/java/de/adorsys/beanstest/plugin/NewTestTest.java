@@ -47,7 +47,7 @@ public class NewTestTest {
 
     @After
     public void destroy() throws Exception {
-        forgeTestCommons.cleanUp();
+//        forgeTestCommons.cleanUp();
     }
 
     @Test

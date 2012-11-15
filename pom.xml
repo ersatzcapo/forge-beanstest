@@ -79,6 +79,16 @@
 			<artifactId>junit</artifactId>
 			<version>4.10</version>
 		</dependency>
+		<dependency>
+			<groupId>org.jboss.forge</groupId>
+			<artifactId>forge-javaee-api</artifactId>
+			<version>1.1.2.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.forge</groupId>
+			<artifactId>forge-javaee-impl</artifactId>
+			<version>1.1.2.Final</version>
+		</dependency>
 	</dependencies>
 	<repositories>
 		<repository>
