@@ -1,0 +1,12 @@
+package de.adorsys.beanstest;
+
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
+/**
+ * AlternativesProducer contains producer methods to provide tests with mock alternativs
+ * for CDI beans
+ */
+public class AlternativesProducer {
+
+}

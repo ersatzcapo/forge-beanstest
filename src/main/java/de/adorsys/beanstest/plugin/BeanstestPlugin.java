@@ -45,6 +45,7 @@ import org.jboss.forge.shell.plugins.SetupCommand;
 import org.junit.runner.RunWith;
 
 import de.adorsys.beanstest.plugin.facet.CDITestFacet;
+import de.adorsys.beanstest.plugin.facet.MockitoFacet;
 
 /**
  * CDI test plugin
@@ -107,7 +108,7 @@ public class BeanstestPlugin implements Plugin {
                 javaTestClass.setPackage(java.calculatePackage(javaTestResource));
                 
                 //SimpleRunner import
-                JavaResource simpleRunnerResource = java.getTestJavaResource(java.getBasePackage() + CDITestFacet.PACKAGE + ".SimpleRunner.java");
+                JavaResource simpleRunnerResource = java.getTestJavaResource(java.getBasePackage() + BeanstestConfiguration.PACKAGESUFFIX + ".SimpleRunner.java");
                 if(simpleRunnerResource != null && simpleRunnerResource.exists()) {
                     javaTestClass.addImport(simpleRunnerResource.getJavaSource());
                 } else {
@@ -128,10 +129,20 @@ public class BeanstestPlugin implements Plugin {
     }
 
 
-    @Command("mock-alternative")
-    // mockito plain stereotype
-    // TODO
-    public void command(@PipeIn String in, PipeOut out, @Option String... args) {
-        throw new RuntimeException("not yet implemented");
+    @Command("new-mockito")
+    public void command(@PipeIn String in, PipeOut out,
+            @Option(required = false, name = "sterotype", shortName = "s") final String stereotype,
+            @Option(required = true, name = "type", shortName = "t") final JavaResource type
+            ) {
+        if (!project.hasFacet(MockitoFacet.class)) {
+            installFaEvent.fire(new InstallFacets(MockitoFacet.class));
+        }
+        
+        MockitoFacet mockito = project.getFacet(MockitoFacet.class);
+        
+        //TODO 
+        mockito.createDies();
+        
+        mockito.createDas();
     }
 }

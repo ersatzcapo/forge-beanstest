@@ -30,8 +30,8 @@ import org.junit.runner.RunWith;
 import de.adorsys.beanstest.ForgeTestCommons;
 
 @RunWith(SimpleRunner.class)
-public class NewTestTest {
-    private static final String TESTPROJECTNAME = NewTestTest.class.getSimpleName();
+public class NewMockitoTest {
+    private static final String TESTPROJECTNAME = NewMockitoTest.class.getSimpleName();
     private static final String TESTPACKAGENAME = "de.adorsys.testproject";
 
     @Inject
@@ -56,12 +56,12 @@ public class NewTestTest {
 
         shell.execute("beanstest setup");
         
-        shell.execute("beanstest new-test --type " + TESTPACKAGENAME + ".FirstTest");
+        shell.execute("beanstest new-mockito --type " + TESTPACKAGENAME + ".FirstTest");
  
         // test test :)
-        assertTrue("FirstTest was not created", new File("target/" 
+        assertTrue("AlternativesProducer was not created", new File("target/" 
                 + TESTPROJECTNAME 
-                + "/src/test/java/" + TESTPACKAGENAME.replaceAll("\\.", "/") + "/FirstTest.java").exists());
+                + "/src/test/java/" + (TESTPACKAGENAME + BeanstestConfiguration.PACKAGESUFFIX).replaceAll("\\.", "/") + "/AlternativesProducer.java").exists());
 
     }
     

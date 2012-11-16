@@ -21,6 +21,8 @@ import org.jboss.forge.project.dependencies.Dependency;
 
 @ApplicationScoped
 public class BeanstestConfiguration {
+    public static final String PACKAGESUFFIX = ".beanstest";
+    
     private Dependency weldseDependency;
 
     public Dependency getWeldseDependency() {

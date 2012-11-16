@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import de.adorsys.beanstest.ForgeTestCommons;
+import de.adorsys.beanstest.plugin.BeanstestConfiguration;
 import de.adorsys.beanstest.plugin.SimpleRunner;
 
 @RunWith(SimpleRunner.class)
@@ -115,7 +116,7 @@ public class CDITestFacetTest {
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         
         assertEquals("XXX", bufferedReader.readLine());
-        assertEquals(TESTPACKAGENAME + CDITestFacet.PACKAGE + "." + "HideMissingScopesExtension", bufferedReader.readLine());
+        assertEquals(TESTPACKAGENAME + BeanstestConfiguration.PACKAGESUFFIX + "." + "HideMissingScopesExtension", bufferedReader.readLine());
         bufferedReader.close();
     }
 

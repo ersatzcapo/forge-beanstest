@@ -49,7 +49,7 @@ import de.adorsys.beanstest.plugin.BeanstestConfiguration;
 public class CDITestFacet extends BaseFacet {
     public static final Dependency WELDSEDEFAULT = DependencyBuilder.create("org.jboss.weld.se:weld-se:1.1.10.Final:test");
     public static final Dependency JUNIT = DependencyBuilder.create("junit:junit:4.10:test");
-    public static final String PACKAGE = ".beanstest";
+    
     
     @Inject
     private BeanstestConfiguration configuration;
@@ -74,7 +74,7 @@ public class CDITestFacet extends BaseFacet {
         // create SimpleRunner
         final JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
         JavaClass simpleRunner = JavaParser.parse(JavaClass.class, getClass().getResourceAsStream("/de/adorsys/beanstest/SimpleRunner.jv"));
-        simpleRunner.setPackage(java.getBasePackage() + CDITestFacet.PACKAGE);
+        simpleRunner.setPackage(java.getBasePackage() + BeanstestConfiguration.PACKAGESUFFIX);
         try {
             java.saveTestJavaSource(simpleRunner);
         } catch (FileNotFoundException e) {
@@ -96,7 +96,7 @@ public class CDITestFacet extends BaseFacet {
         final JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
         boolean simplerunner = false;
         try {
-            simplerunner = java.getTestJavaResource((java.getBasePackage() + PACKAGE).replaceAll("\\.", File.separator) + "/SimpleRunner.java").exists();
+            simplerunner = java.getTestJavaResource((java.getBasePackage() + BeanstestConfiguration.PACKAGESUFFIX).replaceAll("\\.", File.separator) + "/SimpleRunner.java").exists();
         } catch (FileNotFoundException e) {}
         boolean testbeans = getConfigFile(getProject()).exists();
         return weldse && junit && simplerunner && testbeans;
@@ -107,7 +107,7 @@ public class CDITestFacet extends BaseFacet {
         final JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
 
         JavaClass hideMissingScopesJavaClass = JavaParser.parse(JavaClass.class, getClass().getResourceAsStream("/de/adorsys/beanstest/HideMissingScopesExtension.jv"));
-        hideMissingScopesJavaClass.setPackage(java.getBasePackage() + PACKAGE);
+        hideMissingScopesJavaClass.setPackage(java.getBasePackage() + BeanstestConfiguration.PACKAGESUFFIX);
 
         try {
             java.saveTestJavaSource(hideMissingScopesJavaClass);
