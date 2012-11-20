@@ -139,10 +139,6 @@ public class BeanstestPlugin implements Plugin {
         }
         
         MockitoFacet mockito = project.getFacet(MockitoFacet.class);
-        
-        //TODO 
-        mockito.createDies();
-        
-        mockito.createDas();
+        mockito.createMockProducer(type, stereotype, out);
     }
 }

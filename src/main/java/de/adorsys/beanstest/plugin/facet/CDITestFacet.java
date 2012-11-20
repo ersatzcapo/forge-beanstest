@@ -34,6 +34,9 @@ import org.jboss.forge.resources.FileResource;
 import org.jboss.forge.shell.plugins.Alias;
 import org.jboss.forge.shell.plugins.RequiresFacet;
 import org.jboss.forge.spec.javaee.CDIFacet;
+import org.jboss.shrinkwrap.descriptor.api.DescriptorImporter;
+import org.jboss.shrinkwrap.descriptor.api.Descriptors;
+import org.jboss.shrinkwrap.descriptor.api.spec.cdi.beans.BeansDescriptor;
 
 import de.adorsys.beanstest.ExtensionsServicesFileResource;
 import de.adorsys.beanstest.plugin.BeanstestConfiguration;
@@ -100,6 +103,12 @@ public class CDITestFacet extends BaseFacet {
         } catch (FileNotFoundException e) {}
         boolean testbeans = getConfigFile(getProject()).exists();
         return weldse && junit && simplerunner && testbeans;
+    }
+    
+    public BeansDescriptor getConfig() {
+        DescriptorImporter<BeansDescriptor> importer = Descriptors.importAs(BeansDescriptor.class);
+        BeansDescriptor descriptor = importer.from(getConfigFile(getProject()).getUnderlyingResourceObject());
+        return descriptor;
     }
     
     public void hideMissingScopes() {        

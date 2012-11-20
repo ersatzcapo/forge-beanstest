@@ -56,7 +56,7 @@ public class NewMockitoTest {
 
         shell.execute("beanstest setup");
         
-        shell.execute("beanstest new-mockito --type " + TESTPACKAGENAME + ".FirstTest");
+        shell.execute("beanstest new-mockito --type " + TESTPACKAGENAME + ".FirstClass");
  
         // test test :)
         assertTrue("AlternativesProducer was not created", new File("target/" 
