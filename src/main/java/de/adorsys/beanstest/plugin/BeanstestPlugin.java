@@ -131,9 +131,9 @@ public class BeanstestPlugin implements Plugin {
 
     @Command("new-mockito")
     public void command(@PipeIn String in, PipeOut out,
-            @Option(required = false, name = "sterotype", shortName = "s") final String stereotype,
+            @Option(required = false, name = "stereotype", shortName = "s") final String stereotype,
             @Option(required = true, name = "type", shortName = "t") final JavaResource type
-            ) {
+            ) throws FileNotFoundException {
         if (!project.hasFacet(MockitoFacet.class)) {
             installFaEvent.fire(new InstallFacets(MockitoFacet.class));
         }

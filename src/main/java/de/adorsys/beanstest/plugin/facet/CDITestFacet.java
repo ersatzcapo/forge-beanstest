@@ -142,4 +142,8 @@ public class CDITestFacet extends BaseFacet {
             cdiextensions.setContents(hideMissingScopesJavaClass.getQualifiedName());
         }
     }
+
+    public void saveConfig(BeansDescriptor beansDescriptor) {
+        getConfigFile(project).setContents(beansDescriptor.exportAsString());
+    }
 }

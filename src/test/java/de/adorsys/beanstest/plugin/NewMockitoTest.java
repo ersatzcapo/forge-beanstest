@@ -51,7 +51,7 @@ public class NewMockitoTest {
     }
 
     @Test
-    public void testNewTest() throws Exception {
+    public void testNewMockito() throws Exception {
         forgeTestCommons.setNewInput("\n10\n");
 
         shell.execute("beanstest setup");
@@ -65,5 +65,18 @@ public class NewMockitoTest {
 
     }
     
+    @Test
+    public void testNewMockitoWithStereotype() throws Exception {
+        forgeTestCommons.setNewInput("\n10\n");
 
+        shell.execute("beanstest setup");
+        
+        shell.execute("beanstest new-mockito --type " + TESTPACKAGENAME + ".FirstClass --stereotype StereotypeAnno");
+ 
+        // test test :)
+        assertTrue("AlternativesProducer was not created", new File("target/" 
+                + TESTPROJECTNAME 
+                + "/src/test/java/" + (TESTPACKAGENAME + BeanstestConfiguration.PACKAGESUFFIX).replaceAll("\\.", "/") + "/AlternativesProducer.java").exists());
+
+    }
 }
