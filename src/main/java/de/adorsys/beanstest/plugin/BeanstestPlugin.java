@@ -92,29 +92,31 @@ public class BeanstestPlugin implements Plugin {
     }
 
     @Command("new-test")
-    public void newTest(@Option(required = true, name = "type", shortName = "t") final String type, //JavaResource always maps to main folder, see JavaPathspecParser
-            PipeOut out) throws FileNotFoundException {
+    public void newTest(@Option(required = true, name = "type", shortName = "t") final JavaResource type, PipeOut out) throws FileNotFoundException {
         JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
         DirectoryResource resource = java.getTestSourceFolder();
         
-        String path = type.replaceAll("\\.", File.separator) + ".java"; //TODO
-        
-        JavaResource javaTestResource = resource.getChildOfType(JavaResource.class, path); //TODO eventually . ˜
-        
+        // JavaResource always maps to main folder, see JavaPathspecParser
+        String className = java.calculateName(type);
+        String packageName = java.calculatePackage(type);
+        String path = (packageName + "." + className).replaceAll("\\.", File.separator) + ".java";
+
+        JavaResource javaTestResource = resource.getChildOfType(JavaResource.class, path);
+
         if (!javaTestResource.exists()) {
             if (javaTestResource.createNewFile()) {
                 JavaClass javaTestClass = JavaParser.create(JavaClass.class);
                 javaTestClass.setName(java.calculateName(javaTestResource));
                 javaTestClass.setPackage(java.calculatePackage(javaTestResource));
-                
-                //SimpleRunner import
+
+                // SimpleRunner import
                 JavaResource simpleRunnerResource = java.getTestJavaResource(java.getBasePackage() + BeanstestConfiguration.PACKAGESUFFIX + ".SimpleRunner.java");
-                if(simpleRunnerResource != null && simpleRunnerResource.exists()) {
+                if (simpleRunnerResource != null && simpleRunnerResource.exists()) {
                     javaTestClass.addImport(simpleRunnerResource.getJavaSource());
                 } else {
                     throw new RuntimeException("SimpleRunner does not exist: [" + simpleRunnerResource + "]");
                 }
-                
+
                 javaTestClass.addImport(RunWith.class);
                 javaTestClass.addAnnotation(RunWith.class);
                 javaTestClass.getAnnotation(RunWith.class).setLiteralValue("SimpleRunner.class");
@@ -128,16 +130,13 @@ public class BeanstestPlugin implements Plugin {
         }
     }
 
-
     @Command("new-mockito")
-    public void command(@PipeIn String in, PipeOut out,
-            @Option(required = false, name = "stereotype", shortName = "s") final String stereotype,
-            @Option(required = true, name = "type", shortName = "t") final JavaResource type
-            ) throws FileNotFoundException {
+    public void command(@PipeIn String in, PipeOut out, @Option(required = false, name = "stereotype", shortName = "s") final String stereotype,
+            @Option(required = true, name = "type", shortName = "t") final JavaResource type) throws FileNotFoundException {
         if (!project.hasFacet(MockitoFacet.class)) {
             installFaEvent.fire(new InstallFacets(MockitoFacet.class));
         }
-        
+
         MockitoFacet mockito = project.getFacet(MockitoFacet.class);
         mockito.createMockProducer(type, stereotype, out);
     }
