@@ -76,6 +76,7 @@ public class MockitoFacet extends BaseFacet {
         }
         
         JavaClass alternativesClass = JavaParser.parse(JavaClass.class, alternativesResource.getResourceInputStream());
+        alternativesClass.setPackage(beanstestPackage);
         
         String className = java.calculateName(type);
         String packageName = java.calculatePackage(type);
@@ -86,7 +87,7 @@ public class MockitoFacet extends BaseFacet {
         //add producer method
         Method<JavaClass> producerMethod = alternativesClass.addMethod("public " + className + " produce" + className + "()"); //:(
         producerMethod.addAnnotation(Produces.class);
-        producerMethod.setBody("mock(" + className + ".class);");
+        producerMethod.setBody("return mock(" + className + ".class);");
         
         //handle alternative annotation and beans.xml entry
         BeansDescriptor beansDescriptor = project.getFacet(CDITestFacet.class).getConfig();
