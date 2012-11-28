@@ -143,11 +143,11 @@ public class MockitoFacet extends BaseFacet {
 
     private JavaResource getAlternativesProducer() throws FileNotFoundException {
         final JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
-        return java.getTestJavaResource((java.getBasePackage() + BeanstestConfiguration.PACKAGESUFFIX).replaceAll("\\.", File.separator)+ "/AlternativesProducer.java");
+        return java.getTestJavaResource((java.getBasePackage() + BeanstestConfiguration.PACKAGESUFFIX).replaceAll("\\.", "/")+ "/AlternativesProducer.java");
     }
     
     private JavaResource getStereotype(String stereotype) throws FileNotFoundException {
         final JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
-        return java.getTestJavaResource((java.getBasePackage() + BeanstestConfiguration.PACKAGESUFFIX).replaceAll("\\.", File.separator)+ "/"+ stereotype + ".java");
+        return java.getTestJavaResource((java.getBasePackage() + BeanstestConfiguration.PACKAGESUFFIX).replaceAll("\\.", "/")+ "/"+ stereotype + ".java");
     }
 }

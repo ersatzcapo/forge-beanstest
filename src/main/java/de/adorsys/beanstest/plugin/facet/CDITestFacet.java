@@ -88,7 +88,7 @@ public class CDITestFacet extends BaseFacet {
     }
 
     private FileResource<?> getConfigFile(final Project project) {
-        return (FileResource<?>) project.getFacet(ResourceFacet.class).getTestResourceFolder().getChild("META-INF" + File.separator + "beans.xml");
+        return (FileResource<?>) project.getFacet(ResourceFacet.class).getTestResourceFolder().getChild("META-INF/beans.xml");
     }
 
     @Override
@@ -99,7 +99,7 @@ public class CDITestFacet extends BaseFacet {
         final JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
         boolean simplerunner = false;
         try {
-            simplerunner = java.getTestJavaResource((java.getBasePackage() + BeanstestConfiguration.PACKAGESUFFIX).replaceAll("\\.", File.separator) + "/SimpleRunner.java").exists();
+            simplerunner = java.getTestJavaResource((java.getBasePackage() + BeanstestConfiguration.PACKAGESUFFIX).replaceAll("\\.", "/") + "/SimpleRunner.java").exists();
         } catch (FileNotFoundException e) {}
         boolean testbeans = getConfigFile(getProject()).exists();
         return weldse && junit && simplerunner && testbeans;
@@ -125,7 +125,7 @@ public class CDITestFacet extends BaseFacet {
         }
         
         // Create services folder and CDI extensions file
-        DirectoryResource services = project.getFacet(ResourceFacet.class).getTestResourceFolder().getChildDirectory("META-INF" + File.separator +"services");
+        DirectoryResource services = project.getFacet(ResourceFacet.class).getTestResourceFolder().getChildDirectory("META-INF/services");
         if (!services.exists()) {
             services.mkdirs();
         }

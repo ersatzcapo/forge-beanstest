@@ -34,6 +34,7 @@ import org.jboss.forge.resources.java.JavaResource;
 import org.jboss.forge.shell.Shell;
 import org.jboss.forge.shell.ShellMessages;
 import org.jboss.forge.shell.ShellPrompt;
+import org.jboss.forge.shell.events.PickupResource;
 import org.jboss.forge.shell.plugins.Alias;
 import org.jboss.forge.shell.plugins.Command;
 import org.jboss.forge.shell.plugins.Option;
@@ -69,6 +70,9 @@ public class BeanstestPlugin implements Plugin {
 
     @Inject
     private BeanstestConfiguration configuration;
+    
+    @Inject
+    private Event<PickupResource> pickup;
 
     @SetupCommand
     public void setup(PipeOut out) throws Exception {
@@ -94,14 +98,14 @@ public class BeanstestPlugin implements Plugin {
     @Command("new-test")
     public void newTest(@Option(required = true, name = "type", shortName = "t") final JavaResource type, PipeOut out) throws FileNotFoundException {
         JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
-        DirectoryResource resource = java.getTestSourceFolder();
+        DirectoryResource testSrcFolder = java.getTestSourceFolder();
         
         // JavaResource always maps to main folder, see JavaPathspecParser
         String className = java.calculateName(type);
         String packageName = java.calculatePackage(type);
-        String path = (packageName + "." + className).replaceAll("\\.", File.separator) + ".java";
+        String path = (packageName + "." + className).replaceAll("\\.", "/") + ".java";
 
-        JavaResource javaTestResource = resource.getChildOfType(JavaResource.class, path);
+        JavaResource javaTestResource = testSrcFolder.getChildOfType(JavaResource.class, path);
 
         if (!javaTestResource.exists()) {
             if (javaTestResource.createNewFile()) {
@@ -118,10 +122,10 @@ public class BeanstestPlugin implements Plugin {
                 }
 
                 javaTestClass.addImport(RunWith.class);
-                javaTestClass.addAnnotation(RunWith.class);
-                javaTestClass.getAnnotation(RunWith.class).setLiteralValue("SimpleRunner.class");
+                javaTestClass.addAnnotation(RunWith.class).setLiteralValue("SimpleRunner.class");
 
                 javaTestResource.setContents(javaTestClass);
+                pickup.fire(new PickupResource(javaTestResource));
             } else {
                 ShellMessages.error(out, "Cannot create test [" + javaTestResource.getFullyQualifiedName() + "]");
             }
