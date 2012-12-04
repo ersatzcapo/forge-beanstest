@@ -52,8 +52,8 @@ To generate a mock for a class in your project:
 	beanstest new-mockito --type <class to mock>
 	
 This adds all necessary dependencies and creates the class AlternativeProducer right next to the SimpleRunner.
-It contains a CDI producer method that produces a mockito mock alterntative for the given type. If you prefer
-to use alternative stereotypes instead of a plain alternative class just add the stereotype name like this:
+The AlternetiveProducer class will contain a CDI producer method that produces a mockito mock alterntative for the given type.
+If you prefer to use alternative stereotypes instead of a plain alternative class just add the stereotype name like this:
 
 	beanstest new-mockito --type <class to mock> --stereotype <name of stereotype>
 
