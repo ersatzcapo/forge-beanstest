@@ -31,7 +31,7 @@ Hide missing scopes
 -------------------
 
 Weld se does not support some web specific scopes such as request scope or session scope. Thus it
-will throw an exception, when it detects a request or session scope annotation. To prevent this type:
+will throw an exception, when it detects a request or session scope annotation. To prevent this:
 
 	beanstest hide-missing-scopes
 	
