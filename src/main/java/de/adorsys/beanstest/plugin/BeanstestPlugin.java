@@ -125,7 +125,7 @@ public class BeanstestPlugin implements Plugin {
                 javaTestClass.addAnnotation(RunWith.class).setLiteralValue("SimpleRunner.class");
 
                 javaTestResource.setContents(javaTestClass);
-                pickup.fire(new PickupResource(javaTestResource));
+                pickup.fire(new PickupResource(javaTestResource)); //TODO picked up resource writes to main folder :(
             } else {
                 ShellMessages.error(out, "Cannot create test [" + javaTestResource.getFullyQualifiedName() + "]");
             }
