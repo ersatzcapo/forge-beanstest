@@ -27,13 +27,13 @@ This will add junit and weld se dependency to your pom and add a beans.xml to sr
 It will also copy a class named "SimpleRunner" to your test folder. If not already done, it will also cause 
 a "beans setup" for general CDI support.
 
-Hide missing scopes
+Mock missing scopes
 -------------------
 
 Weld se does not support some web specific scopes such as request scope or session scope. Thus it
 will throw an exception, when it detects a request or session scope annotation. To prevent this:
 
-	beanstest hide-missing-scopes
+	beanstest mock-scopes
 	
 This will add an extension, that will mock every missing scope context during startup of the weld container.
 
