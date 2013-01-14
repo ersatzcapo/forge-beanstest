@@ -111,17 +111,17 @@ public class CDITestFacet extends BaseFacet {
         return descriptor;
     }
     
-    public void hideMissingScopes() {        
+    public void mockMissingScopes() {        
         // Create HideMissingScopes extension
         final JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
 
-        JavaClass hideMissingScopesJavaClass = JavaParser.parse(JavaClass.class, getClass().getResourceAsStream("/de/adorsys/beanstest/HideMissingScopesExtension.jv"));
-        hideMissingScopesJavaClass.setPackage(java.getBasePackage() + BeanstestConfiguration.PACKAGESUFFIX);
+        JavaClass mockMissingScopesJavaClass = JavaParser.parse(JavaClass.class, getClass().getResourceAsStream("/de/adorsys/beanstest/MockMissingScopesExtension.jv"));
+        mockMissingScopesJavaClass.setPackage(java.getBasePackage() + BeanstestConfiguration.PACKAGESUFFIX);
 
         try {
-            java.saveTestJavaSource(hideMissingScopesJavaClass);
+            java.saveTestJavaSource(mockMissingScopesJavaClass);
         } catch (FileNotFoundException e) {
-            throw new RuntimeException("HideMissingScopesExtension cannot be created", e);
+            throw new RuntimeException("MockMissingScopesExtension cannot be created", e);
         }
         
         // Create services folder and CDI extensions file
@@ -134,12 +134,12 @@ public class CDITestFacet extends BaseFacet {
         
         if (cdiextensions.exists()) {
             // read existing, check for HMSExtension, if not present add
-            if (!cdiextensions.containsExtension(hideMissingScopesJavaClass)) {
-                cdiextensions.addExtension(hideMissingScopesJavaClass);
+            if (!cdiextensions.containsExtension(mockMissingScopesJavaClass)) {
+                cdiextensions.addExtension(mockMissingScopesJavaClass);
             }
         } else {
             cdiextensions.createNewFile();
-            cdiextensions.setContents(hideMissingScopesJavaClass.getQualifiedName());
+            cdiextensions.setContents(mockMissingScopesJavaClass.getQualifiedName());
         }
     }
 

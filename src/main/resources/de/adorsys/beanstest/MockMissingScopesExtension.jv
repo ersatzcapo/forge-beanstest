@@ -20,7 +20,7 @@ import java.util.Set;
  * Hides CDI scopes that are not implemented in Weld SE, e.g. RequestScope, SessionScope.
  * Does not emulate the real behaviour of these scopes, but prevents the missing scope exception.
  */
-public class HideMissingScopesExtension implements Extension {
+public class MockMissingScopesExtension implements Extension {
     private Set<Class<? extends Annotation>> missingScopes = new HashSet<Class<? extends Annotation>>();
 
     public void processAnnotatedType(@Observes ProcessAnnotatedType<?> pat, BeanManager manager)  {

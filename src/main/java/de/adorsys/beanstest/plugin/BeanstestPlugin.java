@@ -89,10 +89,10 @@ public class BeanstestPlugin implements Plugin {
         }
     }
 
-    @Command("hide-missing-scopes")
+    @Command("mock-scopes")
     public void hideMissingScopes() {
         CDITestFacet cditest = project.getFacet(CDITestFacet.class);
-        cditest.hideMissingScopes();
+        cditest.mockMissingScopes();
     }
 
     @Command("new-test")

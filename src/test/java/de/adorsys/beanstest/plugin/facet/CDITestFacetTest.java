@@ -74,12 +74,12 @@ public class CDITestFacetTest {
     }
 
     @Test
-    public void testHideMissingScopes() throws Exception {
+    public void testMockMissingScopes() throws Exception {
         forgeTestCommons.setNewInput("\n10\n");
 
         shell.execute("beanstest setup");
         
-        shell.execute("beanstest hide-missing-scopes");
+        shell.execute("beanstest mock-scopes");
  
         // test services/javax.enterprise.inject.spi.Extension created
         assertTrue("CDI extensions services file missing", new File("target/" 
@@ -87,12 +87,12 @@ public class CDITestFacetTest {
                 + "/src/test/resources/META-INF/services/javax.enterprise.inject.spi.Extension").exists());
 
         // test SimpleRunner
-        String simpleRunnerPath = TESTPACKAGENAME.replaceAll("\\.", "/") + "/beanstest/HideMissingScopesExtension.java";
+        String simpleRunnerPath = TESTPACKAGENAME.replaceAll("\\.", "/") + "/beanstest/MockMissingScopesExtension.java";
         assertTrue(simpleRunnerPath + " missing", new File("target/" + TESTPROJECTNAME + "/src/test/java/" + simpleRunnerPath).exists());
     }
     
     @Test
-    public void testHideMissingScopesExistingServices() throws Exception {
+    public void testMockMissingScopesExistingServices() throws Exception {
         forgeTestCommons.setNewInput("\n10\n");
 
         shell.execute("beanstest setup");
@@ -110,13 +110,13 @@ public class CDITestFacetTest {
         fis.write("XXX\n".getBytes());
         fis.close();
 
-        shell.execute("beanstest hide-missing-scopes");
+        shell.execute("beanstest mock-scopes");
         
         InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(f));
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         
         assertEquals("XXX", bufferedReader.readLine());
-        assertEquals(TESTPACKAGENAME + BeanstestConfiguration.PACKAGESUFFIX + "." + "HideMissingScopesExtension", bufferedReader.readLine());
+        assertEquals(TESTPACKAGENAME + BeanstestConfiguration.PACKAGESUFFIX + "." + "MockMissingScopesExtension", bufferedReader.readLine());
         bufferedReader.close();
     }
 
