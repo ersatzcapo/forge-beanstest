@@ -1,8 +1,6 @@
 package de.adorsys.beanstest.plugin.facet;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

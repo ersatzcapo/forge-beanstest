@@ -15,7 +15,6 @@
  */
 package de.adorsys.beanstest.plugin.facet;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 
 import javax.inject.Inject;

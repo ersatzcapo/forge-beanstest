@@ -1,0 +1,51 @@
+package de.adorsys.beanstest;
+
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+
+import org.jboss.weld.injection.spi.JpaInjectionServices;
+
+public class MockJpaInjectionServices implements JpaInjectionServices {
+
+    private EntityManagerFactory entityManagerFactory;
+    private EntityManager entityManager;
+
+    @Override
+    public void cleanup() {
+        try {
+            if (entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().rollback();
+            }
+            entityManager.close();
+            entityManagerFactory.close();
+        } catch (Exception x) {
+        }
+    }
+
+    @Override
+    public EntityManager resolvePersistenceContext(InjectionPoint injectionPoint) {
+        init();
+        return entityManager;
+    }
+
+    @Override
+    public EntityManagerFactory resolvePersistenceUnit(InjectionPoint injectionPoint) {
+        init();
+        return entityManagerFactory;
+    }
+    
+    public void init() {
+        if (entityManager != null && entityManagerFactory != null) {
+            return;
+        }
+        
+        try {
+            entityManagerFactory = Persistence.createEntityManagerFactory("test");
+            entityManager = entityManagerFactory.createEntityManager();            
+        } catch (Exception x) {
+            throw new IllegalStateException(x);
+        }
+    }
+}

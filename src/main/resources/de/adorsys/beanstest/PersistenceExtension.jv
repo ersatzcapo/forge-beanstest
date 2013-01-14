@@ -1,0 +1,19 @@
+package de.adorsys.beanstest;
+
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.BeforeBeanDiscovery;
+import javax.enterprise.inject.spi.Extension;
+
+import org.jboss.weld.injection.spi.JpaInjectionServices;
+import org.jboss.weld.manager.BeanManagerImpl;
+
+/**
+ * Extension that registers the class MockJpaInjectionServices as Injection Service
+ */
+public class PersistenceExtension implements Extension {
+	public void beforeBeanDiscovery(@Observes BeforeBeanDiscovery beanDiscovery, BeanManager bm) {
+		BeanManagerImpl beanManagerImpl = (BeanManagerImpl) bm;
+		beanManagerImpl.getServices().add(JpaInjectionServices.class, new MockJpaInjectionServices());
+	}
+}
