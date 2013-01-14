@@ -61,7 +61,7 @@ public class MockMissingScopesExtension implements Extension {
         }
     }
     
-    private static class CDIContextMock implements Context {
+    static class CDIContextMock implements Context {
         private final Class<? extends Annotation> scopeAnnotation;
         private Map<Contextual<?>, Object> instances;
         
@@ -91,6 +91,10 @@ public class MockMissingScopesExtension implements Extension {
         @Override
         public boolean isActive() {
             return true;
+        }
+        
+        public void clearScope() {
+            instances.clear();
         }
     }
  }
