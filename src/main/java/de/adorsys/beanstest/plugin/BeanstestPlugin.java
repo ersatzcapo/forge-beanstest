@@ -15,7 +15,6 @@
  */
 package de.adorsys.beanstest.plugin;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 
@@ -47,6 +46,7 @@ import org.junit.runner.RunWith;
 
 import de.adorsys.beanstest.plugin.facet.CDITestFacet;
 import de.adorsys.beanstest.plugin.facet.MockitoFacet;
+import de.adorsys.beanstest.plugin.facet.PersistenceTestFacet;
 
 /**
  * CDI test plugin
@@ -135,7 +135,7 @@ public class BeanstestPlugin implements Plugin {
     }
 
     @Command("new-mockito")
-    public void command(@PipeIn String in, PipeOut out, @Option(required = false, name = "stereotype", shortName = "s") final String stereotype,
+    public void newMockito(@PipeIn String in, PipeOut out, @Option(required = false, name = "stereotype", shortName = "s") final String stereotype,
             @Option(required = true, name = "type", shortName = "t") final JavaResource type) throws FileNotFoundException {
         if (!project.hasFacet(MockitoFacet.class)) {
             installFaEvent.fire(new InstallFacets(MockitoFacet.class));
@@ -143,5 +143,12 @@ public class BeanstestPlugin implements Plugin {
 
         MockitoFacet mockito = project.getFacet(MockitoFacet.class);
         mockito.createMockProducer(type, stereotype, out);
+    }
+    
+    @Command("setup-test-persistence")
+    public void setupTestPersistence() throws FileNotFoundException {
+        if (!project.hasFacet(PersistenceTestFacet.class)) {
+            installFaEvent.fire(new InstallFacets(PersistenceTestFacet.class));
+        }
     }
 }

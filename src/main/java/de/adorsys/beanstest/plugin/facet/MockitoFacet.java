@@ -90,6 +90,8 @@ public class MockitoFacet extends BaseFacet {
         //handle alternative annotation and beans.xml entry
         BeansDescriptor beansDescriptor = project.getFacet(CDITestFacet.class).getConfig();
         if (stereotype == null) {
+            //TODO eventually use a default stereotype since this does not work :(
+            
             if(alternativesClass.getAnnotation(Alternative.class) == null) {
                 alternativesClass.addAnnotation(Alternative.class);
             }
