@@ -54,22 +54,27 @@
 		<dependency>
 			<groupId>org.jboss.forge</groupId>
 			<artifactId>forge-shell-api</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.forge</groupId>
 			<artifactId>forge-test-harness</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.forge</groupId>
 			<artifactId>forge-shell</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.forge</groupId>
 			<artifactId>forge-javaee-api</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.forge</groupId>
 			<artifactId>forge-javaee-impl</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.enterprise</groupId>
