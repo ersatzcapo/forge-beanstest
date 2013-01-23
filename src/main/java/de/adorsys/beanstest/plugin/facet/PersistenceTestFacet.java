@@ -30,7 +30,6 @@ import org.jboss.forge.resources.DirectoryResource;
 import org.jboss.forge.resources.FileResource;
 import org.jboss.forge.shell.plugins.Alias;
 import org.jboss.forge.shell.plugins.RequiresFacet;
-import org.jboss.forge.spec.javaee.PersistenceFacet;
 
 import de.adorsys.beanstest.ExtensionsServicesFileResource;
 import de.adorsys.beanstest.plugin.BeanstestConfiguration;
@@ -41,7 +40,7 @@ import de.adorsys.beanstest.plugin.BeanstestConfiguration;
  * @author Brandenstein
  */
 @Alias("beanstest.PersistenceTestFacet")
-@RequiresFacet({ DependencyFacet.class, ResourceFacet.class, JavaSourceFacet.class, CDITestFacet.class, PersistenceFacet.class })
+@RequiresFacet({ DependencyFacet.class, ResourceFacet.class, JavaSourceFacet.class, CDITestFacet.class })
 public class PersistenceTestFacet extends BaseFacet {
     public static final Dependency HSQLDB = DependencyBuilder.create("org.hsqldb:hsqldb:2.2.9:test");
     public static final Dependency HIBERNATE_CORE = DependencyBuilder.create("org.hibernate:hibernate-core:4.1.9.Final:test");

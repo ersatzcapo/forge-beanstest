@@ -58,5 +58,15 @@ If you prefer to use alternative stereotypes instead of a plain alternative clas
 	beanstest new-mockito --type <class to mock> --stereotype <name of stereotype>
 
 This will additionally create a alternative stereotype annotation and add this to the producer method.	
+
+Setup test persistence
+----------------------
+
+To enable the PersistenceContext annotation:
+
+	beanstest setup-test-persistence
+	
+This will create and register a PersistenceExtionsion, that will add a Weld JpaInjectionServices. The default is to use 
+Hibernate and a hsqldb database. 
 	
 Thx for your interest and thx to all that shared their ideas concerning this topic...
