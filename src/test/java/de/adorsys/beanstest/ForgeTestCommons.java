@@ -65,7 +65,7 @@ public class ForgeTestCommons {
 		beanManager.fireEvent(new Startup(), new Annotation[0]);
 		beanManager.fireEvent(new PostStartup(), new Annotation[0]);
 		
-		localproject = initializeProject(PackagingType.BASIC, projectName, packageName);
+		localproject = initializeProject(PackagingType.JAR, projectName, packageName);
 		
 		shell.setVerbose(true);
 		shell.setExceptionHandlingEnabled(false);

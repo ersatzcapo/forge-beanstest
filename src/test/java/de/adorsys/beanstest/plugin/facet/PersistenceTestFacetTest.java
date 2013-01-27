@@ -43,16 +43,16 @@ public class PersistenceTestFacetTest {
 
     @Before
     public void init() throws Exception {
-        forgeTestCommons.init(TESTPROJECTNAME, TESTPACKAGENAME, false);
+        forgeTestCommons.init(TESTPROJECTNAME, TESTPACKAGENAME, true);
     }
 
     @After
     public void destroy() throws Exception {
-        forgeTestCommons.cleanUp();
+       forgeTestCommons.cleanUp();
     }
 
     @Test
-    public void testMockMissingScopes() throws Exception {
+    public void testSetupTestPersistenceScopes() throws Exception {
         forgeTestCommons.setNewInput("\n10\n");
 
         shell.execute("beanstest setup");
