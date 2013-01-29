@@ -28,10 +28,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import de.adorsys.beanstest.ForgeTestCommons;
+import de.adorsys.beanstest.SimpleRunner;
 
 @RunWith(SimpleRunner.class)
-public class NewMockitoTest {
-    private static final String TESTPROJECTNAME = NewMockitoTest.class.getSimpleName();
+public class MockitoFacetTest {
+    private static final String TESTPROJECTNAME = MockitoFacetTest.class.getSimpleName();
     private static final String TESTPACKAGENAME = "de.adorsys.testproject";
 
     @Inject
@@ -42,7 +43,7 @@ public class NewMockitoTest {
 
     @Before
     public void init() throws Exception {
-        forgeTestCommons.init(TESTPROJECTNAME, TESTPACKAGENAME, true);
+        forgeTestCommons.init(TESTPROJECTNAME, TESTPACKAGENAME, false);
     }
 
     @After

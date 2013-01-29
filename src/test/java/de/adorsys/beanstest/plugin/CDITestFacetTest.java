@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.adorsys.beanstest.plugin.facet;
+package de.adorsys.beanstest.plugin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -33,8 +33,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import de.adorsys.beanstest.ForgeTestCommons;
+import de.adorsys.beanstest.SimpleRunner;
 import de.adorsys.beanstest.plugin.BeanstestConfiguration;
-import de.adorsys.beanstest.plugin.SimpleRunner;
 
 @RunWith(SimpleRunner.class)
 public class CDITestFacetTest {

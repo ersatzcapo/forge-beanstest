@@ -32,6 +32,7 @@ import de.adorsys.beanstest.plugin.BeanstestConfiguration;
 @RequiresFacet({ DependencyFacet.class, JavaSourceFacet.class, CDITestFacet.class })
 public class MockitoFacet extends BaseFacet {
     public static final Dependency MOCKITO = DependencyBuilder.create("org.mockito:mockito-all:1.9.5:test");
+    public static final String ALTERNATIVE_STEREOTYPE_NAME = "BeanstestAlternative";
 
     @Override
     public boolean install() {
@@ -88,24 +89,13 @@ public class MockitoFacet extends BaseFacet {
         producerMethod.setBody("return mock(" + className + ".class);");
         
         //handle alternative annotation and beans.xml entry
-        BeansDescriptor beansDescriptor = project.getFacet(CDITestFacet.class).getConfig();
         if (stereotype == null) {
-            //TODO eventually use a default stereotype since this does not work :(
-            
-            if(alternativesClass.getAnnotation(Alternative.class) == null) {
-                alternativesClass.addAnnotation(Alternative.class);
-            }
-            
-            if (!beansDescriptor.getAlternativeClasses().contains(alternativesClass.getCanonicalName())) { 
-                beansDescriptor.alternativeClass(alternativesClass.getCanonicalName());
-                project.getFacet(CDITestFacet.class).saveConfig(beansDescriptor);
-            }
-        } else {
-            //handle stereotype
-            createStereotype(beanstestPackage, stereotype);
-            producerMethod.addAnnotation(stereotype);
-            
+            stereotype = ALTERNATIVE_STEREOTYPE_NAME;
         }
+
+        //handle stereotype
+        createStereotype(beanstestPackage, stereotype);
+        producerMethod.addAnnotation(stereotype);
         
         alternativesResource.setContents(alternativesClass);
     }
@@ -115,7 +105,7 @@ public class MockitoFacet extends BaseFacet {
 //        @Alternative
 //        @Target(ElementType.METHOD)
 //        @Retention(RetentionPolicy.RUNTIME)
-//        public @interface ProduceReceiverAlternative {
+//        public @interface BeanstestAlternative {
 //        }
         
         //TODO how do i create a nested annotation with Forge ?

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.adorsys.beanstest.plugin.facet;
+package de.adorsys.beanstest.old;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -37,7 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import de.adorsys.beanstest.plugin.SimpleRunner;
+import de.adorsys.beanstest.SimpleRunner;
 
 @Deprecated
 @RunWith(SimpleRunner.class)

@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.adorsys.beanstest.plugin.facet;
+package de.adorsys.beanstest.old;
 
 import javax.enterprise.inject.Alternative;
 
 import org.junit.Ignore;
 import org.junit.Test;
+
 
 @Ignore
 @Alternative

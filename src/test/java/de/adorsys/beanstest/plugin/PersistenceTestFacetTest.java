@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2012 Christian Brandenstein
+ * Copyright (C) 2013 Christian Brandenstein
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ import de.adorsys.beanstest.ForgeTestCommons;
 import de.adorsys.beanstest.SimpleRunner;
 
 @RunWith(SimpleRunner.class)
-public class NewTestTest {
-    private static final String TESTPROJECTNAME = NewTestTest.class.getSimpleName();
+public class PersistenceTestFacetTest {
+    private static final String TESTPROJECTNAME = "PersistenceTestFacetTest";
     private static final String TESTPACKAGENAME = "de.adorsys.testproject";
 
     @Inject
@@ -48,23 +48,25 @@ public class NewTestTest {
 
     @After
     public void destroy() throws Exception {
-        forgeTestCommons.cleanUp();
+       forgeTestCommons.cleanUp();
     }
 
     @Test
-    public void testNewTest() throws Exception {
+    public void testSetupTestPersistenceScopes() throws Exception {
         forgeTestCommons.setNewInput("\n10\n");
 
         shell.execute("beanstest setup");
         
-        shell.execute("beanstest new-test --type " + TESTPACKAGENAME + ".FirstTest");
+        shell.execute("beanstest test-persistence");
  
-        // test test :)
-        assertTrue("FirstTest was not created", new File("target/" 
+        // test services/javax.enterprise.inject.spi.Extension created
+        assertTrue("CDI extensions services file missing", new File("target/" 
                 + TESTPROJECTNAME 
-                + "/src/test/java/" + TESTPACKAGENAME.replaceAll("\\.", "/") + "/FirstTest.java").exists());
+                + "/src/test/resources/META-INF/services/javax.enterprise.inject.spi.Extension").exists());
 
+        // test Extension existence
+        String simpleRunnerPath = TESTPACKAGENAME.replaceAll("\\.", "/") + "/beanstest/PersistenceExtension.java";
+        assertTrue(simpleRunnerPath + " missing", new File("target/" + TESTPROJECTNAME + "/src/test/java/" + simpleRunnerPath).exists());
     }
-    
 
 }

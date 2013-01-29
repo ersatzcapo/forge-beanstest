@@ -145,7 +145,7 @@ public class BeanstestPlugin implements Plugin {
         mockito.createMockProducer(type, stereotype, out);
     }
     
-    @Command("setup-test-persistence")
+    @Command("test-persistence")
     public void setupTestPersistence() throws FileNotFoundException {
         if (!project.hasFacet(PersistenceTestFacet.class)) {
             installFaEvent.fire(new InstallFacets(PersistenceTestFacet.class));
