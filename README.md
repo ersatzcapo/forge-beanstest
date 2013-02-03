@@ -3,7 +3,7 @@ JBoss Forge Beanstest Plugin
 
 This plugin provides a simple junit runner, that starts up a Weld SE container and registers
 the test class itself as CDI bean. Thus injection can be used in the unit test. Additionally there
-is support the generation of test classes and mockito mocks, a JPA persistence test setup and a
+is support for the generation of test classes and mockito mocks, a JPA persistence test setup and a
 extension for mocking missing scope contexts.
 
 Install Beanstest Plugin
@@ -42,8 +42,8 @@ To enable the PersistenceContext annotation:
 
 	beanstest test-persistence
 	
-This will create and register a PersistenceExtionsion, that will add a Weld JpaInjectionServices implementation. When the Weld container comes across a PersistenceContext
-annotation, it will ask the MockJpaInjectionServices for a EntityManager. The default is to use Hibernate and a hsqldb database. 	
+This will create and register a PersistenceExtension, that will add a Weld JpaInjectionServices implementation. When the Weld container comes across a PersistenceContext
+annotation, it will ask the MockJpaInjectionServices for an EntityManager. The default is to use Hibernate and a hsqldb database. 	
 
 Mock missing scopes
 -------------------
@@ -52,12 +52,12 @@ will throw an exception, when it detects a request or session scope annotation. 
 
 	beanstest mock-scopes
 	
-This will add an extension, that will mock every missing scope context during startup of the weld container.
+This will add an extension, that will mock every missing scope context during startup of the Weld container.
 	
 New mockito mock
 ----------------
 
-To generate a mock for a class in your project:
+To generate a mockito mock for a given class:
 
 	beanstest new-mockito --type <class to mock>
 	

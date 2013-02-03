@@ -34,12 +34,14 @@ import org.jboss.forge.shell.events.PostStartup;
 import org.jboss.forge.shell.events.Startup;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import de.adorsys.beanstest.SimpleRunner;
 
 @Deprecated
+@Ignore("prints to stdout")
 @RunWith(SimpleRunner.class)
 public class FirstCDIFacetTest {
 
