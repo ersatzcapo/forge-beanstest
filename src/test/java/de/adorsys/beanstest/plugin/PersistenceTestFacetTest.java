@@ -43,7 +43,7 @@ public class PersistenceTestFacetTest {
 
     @Before
     public void init() throws Exception {
-        forgeTestCommons.init(TESTPROJECTNAME, TESTPACKAGENAME, false);
+        forgeTestCommons.init(TESTPROJECTNAME, TESTPACKAGENAME, true);
     }
 
     @After
