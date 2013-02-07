@@ -46,6 +46,8 @@ public class PersistenceTestFacet extends BaseFacet {
     public static final Dependency HIBERNATE_CORE = DependencyBuilder.create("org.hibernate:hibernate-core:4.1.9.Final:test");
     public static final Dependency HIBERNATE_ENTITYMANAGER = DependencyBuilder.create("org.hibernate:hibernate-entitymanager:4.1.9.Final:test");
     
+    public static final Dependency JPA = DependencyBuilder.create("org.hibernate.javax.persistence:hibernate-jpa-2.0-api:1.0.1.Final:provided");
+    
     @Override
     public boolean install() {
         // add dependencies: hibernate and hsqldb
@@ -53,6 +55,9 @@ public class PersistenceTestFacet extends BaseFacet {
         dependencyFacet.addDirectDependency(HSQLDB);
         dependencyFacet.addDirectDependency(HIBERNATE_CORE);
         dependencyFacet.addDirectDependency(HIBERNATE_ENTITYMANAGER);
+        
+        // prevent compile error, since hibernate is in test scope
+        dependencyFacet.addDirectDependency(JPA);
         
         //Create PersistenceExtension
         JavaClass persistenceExtension = createClassFromTemplate("/de/adorsys/beanstest/PersistenceExtension.jv");
