@@ -41,6 +41,7 @@ import org.junit.runner.RunWith;
 import de.adorsys.beanstest.SimpleRunner;
 
 @Deprecated
+@Ignore
 @RunWith(SimpleRunner.class)
 public class FirstCDIFacetTest {
 

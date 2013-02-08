@@ -49,7 +49,7 @@ public class CDITestFacetTest {
 
     @Before
     public void init() throws Exception {
-        forgeTestCommons.init(TESTPROJECTNAME, TESTPACKAGENAME, true);
+        forgeTestCommons.init(TESTPROJECTNAME, TESTPACKAGENAME, false);
     }
 
     @After
