@@ -10,10 +10,12 @@ Install Beanstest Plugin
 ------------------------
 
 Install and start jboss forge. In the forge shell type:
+
+	forge install-plugin beanstest
 	
+Alternatively you can install it from git repository or directly from source:
+
 	forge git-plugin git://github.com/ersatzcapo/forge-beanstest.git
-	
-Alternatively you can download the source zip, extract it and type:
 
 	forge source-plugin <relative path to source folder>
 	
