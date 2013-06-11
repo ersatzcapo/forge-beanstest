@@ -60,11 +60,11 @@ public class PersistenceTestFacet extends BaseFacet {
         dependencyFacet.addDirectDependency(JPA);
         
         //Create PersistenceExtension
-        JavaClass persistenceExtension = createClassFromTemplate("/de/adorsys/beanstest/PersistenceExtension.jv");
+        JavaClass persistenceExtension = createClassFromTemplate("/de/adorsys/beanstest/PersistenceExtension_weld20.jv"); //TODO switch
         createServiceEntry(persistenceExtension);
         
         //Create MockJpaInjectionServices
-        createClassFromTemplate("/de/adorsys/beanstest/MockJpaInjectionServices.jv");
+        createClassFromTemplate("/de/adorsys/beanstest/MockJpaInjectionServices_weld20.jv"); //TODO switch
         
         //Copy persistence.xml
         FileResource<?> descriptor = getPersistenceFile(project);

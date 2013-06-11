@@ -49,7 +49,8 @@ import de.adorsys.beanstest.plugin.BeanstestConfiguration;
 @Alias("beanstest.CDITestFacet")
 @RequiresFacet({ DependencyFacet.class, ResourceFacet.class, JavaSourceFacet.class, CDIFacet.class })
 public class CDITestFacet extends BaseFacet {
-    public static final Dependency WELDSEDEFAULT = DependencyBuilder.create("org.jboss.weld.se:weld-se:1.1.10.Final:test");
+    //public static final Dependency WELDSEDEFAULT = DependencyBuilder.create("org.jboss.weld.se:weld-se:1.1.10.Final:test");
+    public static final Dependency WELDSEDEFAULT = DependencyBuilder.create("org.jboss.weld.se:weld-se:2.0.1.Final:test");
     public static final Dependency JUNIT = DependencyBuilder.create("junit:junit:4.10:test");
     
     
