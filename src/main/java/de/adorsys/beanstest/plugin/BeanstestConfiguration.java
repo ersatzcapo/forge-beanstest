@@ -32,4 +32,18 @@ public class BeanstestConfiguration {
     public void setWeldseDependency(Dependency weldseDependency) {
         this.weldseDependency = weldseDependency;
     }
+    
+    public String persistenceExtensionTemplate() {
+        if (weldseDependency != null && weldseDependency.getVersion() != null && !weldseDependency.getVersion().startsWith("2")) {
+            return "/de/adorsys/beanstest/PersistenceExtension.jv";
+        }
+        return "/de/adorsys/beanstest/PersistenceExtension_weld20.jv"; //default
+    }
+    
+    public String mockJpaInjectionServicesTemplate() {
+        if (weldseDependency != null && weldseDependency.getVersion() != null && !weldseDependency.getVersion().startsWith("2")) {
+            return "/de/adorsys/beanstest/MockJpaInjectionServices.jv";
+        }
+        return "/de/adorsys/beanstest/MockJpaInjectionServices_weld20.jv"; //default
+    }    
 }

@@ -17,6 +17,8 @@ package de.adorsys.beanstest.plugin.facet;
 
 import java.io.FileNotFoundException;
 
+import javax.inject.Inject;
+
 import org.jboss.forge.parser.JavaParser;
 import org.jboss.forge.parser.java.JavaClass;
 import org.jboss.forge.project.Project;
@@ -48,6 +50,9 @@ public class PersistenceTestFacet extends BaseFacet {
     
     public static final Dependency JPA = DependencyBuilder.create("org.hibernate.javax.persistence:hibernate-jpa-2.0-api:1.0.1.Final:provided");
     
+    @Inject
+    private BeanstestConfiguration beanstestConfiguration;
+    
     @Override
     public boolean install() {
         // add dependencies: hibernate and hsqldb
@@ -60,11 +65,13 @@ public class PersistenceTestFacet extends BaseFacet {
         dependencyFacet.addDirectDependency(JPA);
         
         //Create PersistenceExtension
-        JavaClass persistenceExtension = createClassFromTemplate("/de/adorsys/beanstest/PersistenceExtension_weld20.jv"); //TODO switch
+        Dependency weldse = dependencyFacet.getDirectDependency(DependencyBuilder.create("org.jboss.weld.se:weld-se"));
+        beanstestConfiguration.setWeldseDependency(weldse); //TODO improve
+        JavaClass persistenceExtension = createClassFromTemplate(beanstestConfiguration.persistenceExtensionTemplate());
         createServiceEntry(persistenceExtension);
         
         //Create MockJpaInjectionServices
-        createClassFromTemplate("/de/adorsys/beanstest/MockJpaInjectionServices_weld20.jv"); //TODO switch
+        createClassFromTemplate(beanstestConfiguration.mockJpaInjectionServicesTemplate());
         
         //Copy persistence.xml
         FileResource<?> descriptor = getPersistenceFile(project);
